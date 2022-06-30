@@ -1,5 +1,5 @@
 function App() {
-    return <div>Welcome</div>
+    return <div>Welcome to Movies</div>
 }
 
 export default App
