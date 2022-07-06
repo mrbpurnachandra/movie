@@ -25,8 +25,29 @@ function App() {
     if (loading) return <p>Loading..</p>
 
     if (error) return <p>{error.message}</p>
-    
-    return <pre>{JSON.stringify(movies, null, 2)}</pre>
+
+    return (
+        <>
+            <Navbar />
+            <div className="flex justify-between max-w-4xl mx-auto mt-16">
+                <MovieList>
+                    {movies.map((movie) => {
+                        return <MovieCard movie={movie} key={movie.id} />
+                    })}
+                </MovieList>
+                <MovieDetail movie={movies[0]} />
+            </div>
+        </>
+    )
+}
+
+function MovieList({ children }) {
+    const content = children.length ? (
+        <div className="space-y-4">{children}</div>
+    ) : (
+        <p>No movies</p>
+    )
+    return content
 }
 
 function Navbar() {
@@ -71,27 +92,54 @@ function Navbar() {
     )
 }
 
-function MovieDetail() {
+function Review({ review }) {
+    return (
+        <div className="flex mt-3 space-x-3">
+            <img
+                className="flex-none w-8 h-8 object-cover object-center rounded-full shadow-lg"
+                src={review.profile}
+                alt={review.username}
+            />
+
+            <div className="border px-2 py-1 rounded-md">
+                <p className="text-sm text-gray-700 leading-tight">
+                    {review.content}
+                </p>
+            </div>
+        </div>
+    )
+}
+
+function ReviewList({ children }) {
+    const content = children.length ? (
+        <div>{children}</div>
+    ) : (
+        <p>No reviews yet</p>
+    )
+
+    return (
+        <div>
+            <h4 className="text-gray-600">Reviews</h4>
+            {content}
+        </div>
+    )
+}
+
+function MovieDetail({ movie }) {
     return (
         <article className="w-96">
-            <section>
-                <img
-                    className="w-full h-48 object-cover object-center rounded-lg shadow-lg"
-                    src="https://filmfare.wwmindia.com/content/2022/apr/avatar241651147935.jpg"
-                    alt="Avtar"
-                />
+            <section className="h-48">
+                <MoviePoster name={movie.name} posterImg={movie.poster} />
             </section>
             <section className="mt-2">
-                <h3 className="text-lg font-semibold text-gray-800">Avtar</h3>
+                <h3 className="text-lg font-semibold text-gray-800">
+                    {movie.name}
+                </h3>
                 <div className="flex items-center mt-2 space-x-4">
-                    <div className="flex items-center space-x-1">
-                        <HeartIcon className="w-5 text-gray-500 stroke-1" />
-                        <span className="text-sm text-gray-700">24</span>
-                    </div>
-                    <div className="flex items-center space-x-1">
-                        <ThumbDownIcon className="w-5 text-gray-500 stroke-1" />
-                        <span className="text-sm text-gray-700">2</span>
-                    </div>
+                    <MovieFame
+                        likesCount={movie.likes.length}
+                        dislikesCount={movie.dislikes.length}
+                    />
                 </div>
             </section>
             <section className="mt-6">
@@ -116,53 +164,15 @@ function MovieDetail() {
                 </div>
             </section>
             <section className="mt-4">
-                <h4 className="text-gray-600">Reviews</h4>
-                <div className="flex mt-3 space-x-3">
-                    <img
-                        className="flex-none w-8 h-8 object-cover object-center rounded-full shadow-lg"
-                        src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=387&q=80"
-                        alt="User Profile"
-                    />
-
-                    <div className="border px-2 py-1 rounded-md">
-                        <p className="text-sm text-gray-700 leading-tight">
-                            I remember being so absurdly hyped for this movie.
-                        </p>
-                    </div>
-                </div>
-                <div className="flex mt-2 space-x-3">
-                    <img
-                        className="flex-none w-8 h-8 object-cover object-center rounded-full shadow-lg"
-                        src="https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=580&q=80"
-                        alt="User Profile"
-                    />
-
-                    <div className="border px-2 py-1 rounded-md">
-                        <p className="text-sm text-gray-700 leading-tight">
-                            I loved this movie.
-                        </p>
-                    </div>
-                </div>
-                <div className="flex mt-2 space-x-3">
-                    <img
-                        className="flex-none w-8 h-8 object-cover object-center rounded-full shadow-lg"
-                        src="https://images.unsplash.com/photo-1560250097-0b93528c311a?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=387&q=80"
-                        alt="User Profile"
-                    />
-
-                    <div className="border px-2 py-1 rounded-md">
-                        <p className="text-sm text-gray-700 leading-tight">
-                            This movie made me cries a lot. Such a wonderful
-                            relationship they all has. This movie almost related
-                            to my life. We also lose our house few years
-                            back(2010). And this movie gives me some confidence
-                            in my life.
-                        </p>
-                    </div>
-                </div>
+                <ReviewList>
+                    {movie.reviews.map((review, i) => (
+                        <Review review={review} key={i} />
+                    ))}
+                </ReviewList>
             </section>
         </article>
-    )}
+    )
+}
 
 function MoviePoster({ posterImg, name }) {
     return (
@@ -222,26 +232,26 @@ function ShortReview({ review }) {
     )
 }
 
-function MovieCard() {
+function MovieCard({ movie }) {
     return (
-        <article className="flex items-center space-x-4 max-w-md p-4 border rounded-lg ">
+        <article className="flex items-center space-x-4 max-w-md p-4 border rounded-lg">
             <section className="flex-none w-28 h-32">
-                <MoviePoster
-                    name="Spider Man"
-                    posterImg="https://images.unsplash.com/photo-1635805737707-575885ab0820?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8M3x8bW92aWUlMjBwb3N0ZXJ8ZW58MHx8MHx8&auto=format&fit=crop&w=500&q=60"
-                />
+                <MoviePoster name={movie.name} posterImg={movie.poster} />
             </section>
             <section>
                 <h3 className="text-lg font-semibold text-gray-800">
-                    Spider Man: Homecoming
+                    {movie.name}
                 </h3>
                 <div className="flex items-center mt-1 space-x-4">
-                    <MovieFame likesCount={24} dislikesCount={2} />
+                    <MovieFame
+                        likesCount={movie.likes.length}
+                        dislikesCount={movie.dislikes.length}
+                    />
                 </div>
                 <div className="mt-2">
                     <a
                         className="text-sm text-gray-600 font-semibold hover:text-gray-500 transition-colors"
-                        href="https://www.youtube.com/watch?v=rk-dF1lIbIg"
+                        href={movie.trailer}
                         target="_blank"
                         rel="noopener noreferrer"
                     >
@@ -249,17 +259,11 @@ function MovieCard() {
                     </a>
                 </div>
                 <div className="flex mt-3 space-x-3">
-                    <ShortReview
-                        review={{
-                            profile:
-                                'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=387&q=80',
-                            content:
-                                'I liked this content so much that my heart melted out.',
-                            name: 'Prakash Bhattarai',
-                        }}
-                    />
+                    <ShortReview review={movie.reviews[0]} />
                 </div>
             </section>
         </article>
     )
 }
+
+export default App
