@@ -5,7 +5,7 @@ import { MoviePoster } from './MoviePoster'
 import { Review } from './Review'
 import { ReviewList } from './ReviewList'
 
-export function MovieDetail({ movie, onMovieLike, onMovieDislike }) {
+export function MovieDetail({ movie, onMovieLike, onMovieDislike , onReviewAdd}) {
     return (
         <article className="w-96">
             <section className="h-48">
@@ -25,7 +25,7 @@ export function MovieDetail({ movie, onMovieLike, onMovieDislike }) {
                 </div>
             </section>
             <section className="mt-6">
-                <ReviewForm key={movie.id} />
+                <ReviewForm key={movie.id} onReviewAdd={(review) => onReviewAdd(movie.id, review)}/>
             </section>
             <section className="mt-4">
                 <ReviewList>
@@ -38,15 +38,14 @@ export function MovieDetail({ movie, onMovieLike, onMovieDislike }) {
     )
 }
 
-function ReviewForm({ onReviewUpdate }) {
+function ReviewForm({ onReviewAdd }) {
     const [review, setReview] = useState('')
     const [user] = useAuth()
 
     function handleSubmit(e) {
         e.preventDefault()
         setReview('')
-        console.log(review)
-        onReviewUpdate(review)
+        onReviewAdd(review)
     }
 
     return (
